@@ -1,52 +1,45 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
-import { FormEvent } from 'react'
-import './App.css'
 import { DevTool } from '@hookform/devtools'
-import { UseFormRegister, useForm } from 'react-hook-form'
-import FormField from './components/FormField'
+import { SubmitHandler, useForm } from 'react-hook-form'
+import FormField, { FormFieldProps } from './components/FormField'
 
-export type FormFieldProps = {
-  label: string;
-  type: string;
-  id: string;
-  register: UseFormRegister<any>;
-}
+
 function App() {
-
-  const form = useForm()
-  const { register, control } = form
+  type FormValues = {
+    name: string, email: string, password: string, confirmPassword: string, phone: string
+  }
+  const form = useForm<FormValues>()
+  const { register, control, handleSubmit, formState } = form
   const FormFields: FormFieldProps[] = [
     {
-      id: 'name', label: 'name', type: 'text', register: register
+      id: 'name', label: 'name', type: 'text', register: register, required: true
     },
     {
-      id: 'email', label: 'email', type: 'email', register: register
+      id: 'email', label: 'email', type: 'email', register: register, required: true
     },
     {
-      id: 'password', label: 'password', type: 'password', register: register
+      id: 'password', label: 'password', type: 'password', register: register, required: true
     },
     {
-      id: 'confirmPassword', label: 'confirmPassword', type: 'passowrd', register: register
+      id: 'confirmPassword', label: 'confirmPassword', type: 'passowrd', register: register, required: true
     },
     {
-      id: 'phone', label: 'phone', type: 'tel', register: register
+      id: 'phone', label: 'phone', type: 'tel', register: register, required: true
     }
   ]
+  const handleFormSubmit: SubmitHandler<FormValues> = (data) => console.log(data)
 
-  const handleFormSubmit = (e: FormEvent) => {
-    e.preventDefault()
-    console.log(control._formValues);
-
-  }
   return (
-    <div className="flex items-center justify-center">
-      <form onSubmit={handleFormSubmit} className="w-full max-w-md p-6 rounded shadow shadow-white">
+    <div className="flex items-center ms-4 mt-4">
+      <form onSubmit={handleSubmit(handleFormSubmit)} className="w-full max-w-md p-6 rounded shadow shadow-white">
         {FormFields.map((field: FormFieldProps) => (
           <FormField
             id={field.id}
             label={field.label}
             type={field.type}
             register={register}
+            formState={formState}
+            required={field.required}
             key={field.id}
           />
         ))}
@@ -56,7 +49,10 @@ function App() {
           </button>
         </div>
       </form>
-      <DevTool control={control} placement='bottom-right' />
+      <div>
+
+        <DevTool control={control} placement='bottom-right' />
+      </div>
     </div>
   )
 }
